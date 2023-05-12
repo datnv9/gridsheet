@@ -267,8 +267,15 @@ export const Editor: React.FC = () => {
       case "v": // V
         if (e.ctrlKey || e.metaKey) {
           if (!editing) {
+            e.preventDefault();
+            let rawHTML = ((e as any).clipboardData || (window as any).clipboardData).getData("text/html");
+            let isHTML = true;
+            if (!rawHTML.includes('table')) {
+              rawHTML = ((e as any).clipboardData || (window as any).clipboardData).getData("text/html");
+              isHTML = false;
+            }
             window.setTimeout(() => {
-              dispatch(paste({text: input.value}));
+              dispatch(paste({text: input.value, isHTML }));
               input.value = "";
             }, 50);
             return false;

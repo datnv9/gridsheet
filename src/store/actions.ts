@@ -18,7 +18,7 @@ import {
 } from "../lib/structs";
 import { Table } from "../lib/table";
 
-import { tsv2matrix, p2a } from "../lib/converters";
+import { tsv2matrix, p2a, html2matrix } from "../lib/converters";
 import { DEFAULT_HEIGHT, DEFAULT_WIDTH } from "../constants";
 import { initSearchStatement, restrictPoints } from "./helpers";
 import { smartScroll } from "../lib/virtualization";
@@ -280,7 +280,7 @@ class CutAction<T extends ZoneType> extends CoreAction<T> {
 }
 export const cut = new CutAction().bind();
 
-class PasteAction<T extends { text: string }> extends CoreAction<T> {
+class PasteAction<T extends { text?: string, isHTML: boolean }> extends CoreAction<T> {
   reduce(store: StoreType, payload: T): StoreType {
     const { choosing, copyingZone, selectingZone, cutting, table } = store;
     let selectingArea = zoneToArea(selectingZone);
@@ -324,9 +324,9 @@ class PasteAction<T extends { text: string }> extends CoreAction<T> {
 
     let newTable: Table;
     let { y, x } = choosing;
-    const { text } = payload;
+    const { text, isHTML } = payload;
     if (copyingArea.top === -1) {
-      const matrixFrom = tsv2matrix(text);
+      const matrixFrom = isHTML ? html2matrix(text || '') : tsv2matrix(text || '');
       let { height, width } = matrixShape({ matrix: matrixFrom, base: -1 });
       selectingArea = {
         top: y,

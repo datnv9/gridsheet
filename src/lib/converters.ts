@@ -127,6 +127,24 @@ export const tsv2matrix = (tsv: string): string[][] => {
   return rows;
 };
 
+export const html2matrix = (rawHTML: string): string[][] => {
+  const rows: string[][] = [];
+  if (!rawHTML.includes('</table>')) {
+    rawHTML = rawHTML.replace(/<br.?\/>/g, '\n');
+    const parser = new DOMParser();
+    const htmlDoc = parser.parseFromString(rawHTML, 'text/xml');
+    const table = htmlDoc.querySelector('table');
+    if (table) {
+      const trs = Array.from(table.querySelectorAll('tr'));
+      for (const tr of trs) {
+        const tds = Array.from(tr.querySelectorAll('td'));
+        rows.push(tds.map(td => td.textContent || ''));
+      }
+    }
+  }
+  return rows;
+}
+
 export const a2p = (address: Address): PointType => {
   const m = address.match(/(\$)?([A-Z]*)(\$)?([0-9]*)/);
   if (m == null) {

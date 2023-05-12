@@ -96,7 +96,7 @@ export const ContextMenu: React.FC = () => {
             className="enabled"
             onClick={async () => {
               const text = editorRef.current?.value || "";
-              dispatch(paste({ text }));
+              dispatch(paste({ text, isHTML: false }));
             }}
           >
             <div className="gs-menu-name">Paste</div>
